@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentos Pessoais - Alexandro Pinheiro Silva</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .upload-section {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .upload-box {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-box:hover {
+            border-color: #764ba2;
+            background: #f8f9ff;
+        }
+
+        .upload-box input {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 30px;
+        }
+
+        .doc-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 2px solid #e9ecef;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .doc-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .doc-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .doc-info {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-download, .btn-delete {
+            flex: 1;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .btn-download {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #218838;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .preview {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .status-uploaded {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            .docs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 Documentos Pessoais</h1>
+            <p>Alexandro Pinheiro Silva - CPF: 881.801.904-04</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📤</div>
+                <h3>Clique para adicionar documentos</h3>
+                <p style="color: #666; margin-top: 10px;">Formatos aceitos: PDF, JPEG, PNG</p>
+                <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                <button class="btn" id="uploadBtn" onclick="event.stopPropagation(); uploadFiles()">Upload</button>
+            </div>
+        </div>
+
+        <div id="loadingSection" class="loading" style="display: none;">
+            <div class="upload-icon">⏳</div>
+            <p>Carregando documentos...</p>
+        </div>
+
+        <div class="docs-grid" id="docsGrid"></div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'alexandro_documents';
+        let documents = {};
+
+        // Inicializar documentos padrão
+        function initializeDefaultDocs() {
+            return {
+                'carteira_vacinacao': {
+                    name: 'Carteira Nacional de Vacinação',
+                    type: 'PDF',
+                    icon: '💉',
+                    data: null,
+                    uploaded: false,
+                    timestamp: null
+                },
+                'certidao_antecedentes': {
+                    name: 'Certidão de Antecedentes Criminais',
+                    type: 'PDF',
+                    icon: '📋',
+                    data: null,
+                    uploaded: false,
+                    timestamp: null
+                },
+                'comprovante_pix': {
+                    name: 'Comprovante de Transferência Pix',
+                    type: 'PDF',
+                    icon: '💰',
+                    data: null,
+                    uploaded: false,
+                    timestamp: null
+                },
+                'titulo_eleitor': {
+                    name: 'Título Eleitoral',
+                    type: 'JPEG',
+                    icon: '🗳️',
+                    data: null,
+                    uploaded: false,
+                    timestamp: null
+                },
+                'cartao_cidadao': {
+                    name: 'Cartão do Cidadão CAIXA',
+                    type: 'JPEG',
+                    icon: '💳',
+                    data: null,
+                    uploaded: false,
+                    timestamp: null
+                },
+                'cartao_sus': {
+                    name: 'Cartão Nacional de Saúde',
+                    type: 'JPEG',
+                    icon: '🏥',
+                    data: null,
+                    uploaded: false,
+                    timestamp: null
+                },
+                'certidao_casamento': {
+                    name: 'Certidão de Casamento',
+                    type: 'JPEG',
+                    icon: '💍',
+                    data: null,
+                    uploaded: false,
+                    timestamp: null
+                },
+                'ctps': {
+                    name: 'Carteira de Trabalho',
+                    type: 'JPEG',
+                    icon: '👔',
+                    data: null,
+                    uploaded: false,
+                    timestamp: null
+                },
+                'qualificacao_civil': {
+                    name: 'Qualificação Civil',
+                    type: 'JPEG',
+                    icon: '🆔',
+                    data: null,
+                    uploaded: false,
+                    timestamp: null
+                },
+                'dispensa_militar': {
+                    name: 'Certificado de Dispensa Militar',
+                    type: 'JPEG',
+                    icon: '🎖️',
+                    data: null,
+                    uploaded: false,
+                    timestamp: null
+                },
+                'identidade_rn': {
+                    name: 'Carteira de Identidade RN',
+                    type: 'JPEG',
+                    icon: '🪪',
+                    data: null,
+                    uploaded: false,
+                    timestamp: null
+                }
+            };
+        }
+
+        // Carregar dados do storage persistente
+        async function loadFromStorage() {
+            try {
+                const stored = await window.storage.get(STORAGE_KEY);
+                if (stored && stored.value) {
+                    documents = JSON.parse(stored.value);
+                } else {
+                    documents = initializeDefaultDocs();
+                    await saveToStorage();
+                }
+            } catch (error) {
+                console.log('Inicializando documentos pela primeira vez');
+                documents = initializeDefaultDocs();
+                await saveToStorage();
+            }
+        }
+
+        // Salvar dados no storage persistente
+        async function saveToStorage() {
+            try {
+                await window.storage.set(STORAGE_KEY, JSON.stringify(documents));
+                return true;
+            } catch (error) {
+                console.error('Erro ao salvar:', error);
+                alert('Erro ao salvar no servidor. Tentando novamente...');
+                return false;
+            }
+        }
+
+        function renderDocuments() {
+            const grid = document.getElementById('docsGrid');
+            grid.innerHTML = '';
+
+            Object.entries(documents).forEach(([key, doc]) => {
+                const card = document.createElement('div');
+                card.className = 'doc-card';
+                
+                const statusBadge = doc.uploaded 
+                    ? '<span class="status-badge status-uploaded">✓ Carregado</span>'
+                    : '<span class="status-badge status-pending">Pendente</span>';
+                
+                const dateInfo = doc.timestamp 
+                    ? `<div style="font-size: 0.8em; color: #999; margin-top: 5px;">Upload: ${new Date(doc.timestamp).toLocaleDateString('pt-BR')}</div>`
+                    : '';
+
+                card.innerHTML = `
+                    <div class="doc-icon">${doc.icon}</div>
+                    <div class="doc-title">${doc.name}</div>
+                    <div class="doc-info">Formato: ${doc.type}</div>
+                    ${statusBadge}
+                    ${dateInfo}
+                    <div class="doc-actions" style="margin-top: 15px;">
+                        <button class="btn-download" onclick="downloadDoc('${key}')" ${!doc.uploaded ? 'disabled' : ''}>
+                            ⬇ Download
+                        </button>
+                        <button class="btn-delete" onclick="deleteDoc('${key}')" ${!doc.uploaded ? 'disabled' : ''}>
+                            🗑 Excluir
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                uploadFiles();
+            }
+        });
+
+        async function uploadFiles() {
+            const input = document.getElementById('fileInput');
+            const files = input.files;
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            if (files.length === 0) {
+                alert('Por favor, selecione arquivos para upload.');
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Enviando...';
+
+            let uploadCount = 0;
+
+            for (let file of files) {
+                const reader = new FileReader();
+                
+                await new Promise((resolve) => {
+                    reader.onload = async function(e) {
+                        const newKey = `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                        const fileType = file.type.split('/')[1].toUpperCase();
+                        
+                        documents[newKey] = {
+                            name: file.name,
+                            type: fileType,
+                            icon: getIconByType(file.type),
+                            data: e.target.result,
+                            uploaded: true,
+                            timestamp: Date.now()
+                        };
+                        
+                        uploadCount++;
+                        resolve();
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            await saveToStorage();
+            renderDocuments();
+            input.value = '';
+            
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Upload';
+            
+            alert(`${uploadCount} arquivo(s) enviado(s) com sucesso!`);
+        }
+
+        function getIconByType(type) {
+            if (type.includes('pdf')) return '📄';
+            if (type.includes('image')) return '🖼️';
+            return '📎';
+        }
+
+        async function downloadDoc(key) {
+            const doc = documents[key];
+            if (doc.data && doc.uploaded) {
+                const link = document.createElement('a');
+                link.href = doc.data;
+                link.download = doc.name;
+                link.click();
+            } else {
+                alert('Este documento ainda não possui arquivo anexado. Faça o upload primeiro.');
+            }
+        }
+
+        async function deleteDoc(key) {
+            if (!documents[key].uploaded) {
+                alert('Este documento não possui arquivo para excluir.');
+                return;
+            }
+
+            if (confirm('Deseja realmente excluir este documento?')) {
+                documents[key].data = null;
+                documents[key].uploaded = false;
+                documents[key].timestamp = null;
+                
+                await saveToStorage();
+                renderDocuments();
+                alert('Documento excluído com sucesso!');
+            }
+        }
+
+        // Inicializar aplicação
+        async function init() {
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('docsGrid').style.display = 'none';
+            
+            await loadFromStorage();
+            renderDocuments();
+            
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('docsGrid').style.display = 'grid';
+        }
+
+        // Iniciar quando a página carregar
+        init();
+    </script>
+</body>
+</html>
